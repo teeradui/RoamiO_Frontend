@@ -1,53 +1,52 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+import { green } from "react-native-reanimated/lib/typescript/Colors";
 
 export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
-};
+  //Background Colors
+  bgPrimary: '#fff8ec',
+  bgAccent: '#faf1e2',
+  bgHighlight: '#ffe37a',
+  bgCard: '#fffdf8',
+  bgCard2:'#FFFAF1',
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+  //Text Colors
+  textPrimary: '#6e3a0f',
+  textSecondary: '#ab653a',
+  textMuted: '#bea690',
+  textDisabled: '#dcc6b4',
+
+  // Tab Bar Colors
+  tabActive: '#eca205',
+  tabInactive: '#dcc6b4',
+  tabGlow: '#ffe37a',
+
+  //Fillter Tabs colors
+  filterActiveBg: '#ffe37a',
+  filterActiveText: '#ab653a',
+  filterInactiveBg: '#faf1e2',
+  filterInactiveText: '#bea690',
+
+  // Button Colors
+  btnPrimary: '#FF7D5C',
+  btnSecondary: '#FFFAF1',
+
+  //Step bar colors
+  stepActive: '#FF613A',
+  stepInactive: '#D9D9D9',
+
+  //other colors
+  green:'#33BA42',
+  red: '#E70017',
+  black: '#403E3E',
+
+  //Icon Colors
+  iconOrange: '#FF613A',
+  iconBrown: '#CC9160',
+
+  //Gradient - satellite icon
+  gradientSatellite: ['#ff7d5c', '#f7630d', '#ff613a'] as const,
+
+  //Gradient - Map icon
+  gradientMap: ['#55b8dc', '#3dba9f', '#1e6f58'] as const,
+}as const;
+
+export type ColorKey = keyof typeof Colors;

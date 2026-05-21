@@ -1,98 +1,107 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+type FilterTab = 'All' | 'Active' | 'Upcoming' | 'Completed';
+
+const FILTER_TABS: FilterTab[] = ['All', 'Active', 'Upcoming', 'Completed'];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <View style = {{ flex: 1, backgroundColor: Colors.bgPrimary }}>
+      
+      <View 
+        style = {{ 
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 12, 
+        }}
+      >
+        <View>
+          <Text style = {{ fontSize: 13, color: Colors.textSecondary, fontWeight: "500"}}>Welcome back, user</Text>
+          <Text style = {{ fontSize: 26, fontWeight: "800", color: Colors.textPrimary, marginTop: 1 }}>My Trip</Text>
+        </View>
+
+        <TouchableOpacity style = {{width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center'}}>
+          <Ionicons name="notifications-outline" size = {22} color = {Colors.textSecondary} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator = {false} contentContainerStyle = {{ paddingHorizontal: 20, gap: 8, alignItems: "center"}} style = {{ marginBottom: 12, flexGrow: 0}}>
+
+        {FILTER_TABS.map((tab) => {
+          const focused = activeFilter === tab;
+          return (
+            <TouchableOpacity key ={tab} onPress = {() => setActiveFilter(tab)} style = {{ paddingHorizontal: 16, paddingVertical: 7, borderRadius: 20, backgroundColor: focused ? Colors.filterActiveBg : Colors.filterInactiveBg }}>
+              <Text style = {{ fontSize: 13, fontWeight: focused ? "600" : "500" ,color: focused ? Colors.filterActiveText : Colors.filterInactiveText,}}>{tab}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      <ScrollView showsVerticalScrollIndicator = {false} style = {{ flex:1}} contentContainerStyle = {{paddingHorizontal: 20, paddingBottom: 24}}>
+
+        {/* active & upcoming section */}
+        {activeFilter !== 'Completed' && (
+          <View style = {{ marginBottom: 20 }}>
+            <View style = {{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 12}}>
+              <LinearGradient colors={ Colors.gradientSatellite} start = {{x:0, y:0}} end = {{x:1, y:1}} style={{borderRadius: 8, padding: 6}}>
+                <Ionicons name="navigate" size = {20} color = "#fff" />
+              </LinearGradient>
+              <Text style = {{ fontSize: 17, fontWeight: "700", color: Colors.textPrimary }}>Active & Upcoming Trips</Text>
+            </View>
+            
+            {/*empty state*/}
+            <TouchableOpacity style = {{ alignItems: "center", justifyContent: "center", paddingVertical: 32, gap:10}}>
+              <View style = {{width: 52, height: 52,  alignItems: "center", justifyContent: "center"}}>
+                <Ionicons name="add-circle-outline" size = {28} color= {Colors.textDisabled}/>
+              </View>
+              <View style = {{ alignItems: 'center', gap: 2}}>
+                <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>Start a New Trip</Text>
+                <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Let's create your adventure!</Text>
+              </View>
+              
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* history section */}
+        {activeFilter !== 'Active' && activeFilter !== 'Upcoming' && (
+          <View style = {{ marginBottom: 20}}>
+            <View style = {{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 12}}>
+              <LinearGradient colors = {Colors.gradientMap} start = {{x: 0, y:0}} end ={{x:1, y:1}} style = {{borderRadius: 8, padding: 6}}>
+                <Ionicons name="map" size={16} color= "#fff"/>
+              </LinearGradient>
+              <Text style = {{fontSize: 17, fontWeight: "700", color: Colors.textPrimary}}>Trip History</Text>
+            </View>
+
+            {/*empty state*/}
+            <View style = {{alignItems:"center", justifyContent: "center", paddingVertical: 32, gap: 10}}>
+              <View
+                style={{
+                  width: 52,
+                  height: 52,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons name="sad-outline" size={26} color={Colors.textDisabled} />
+              </View>
+              <View style = {{ alignItems: 'center', gap: 2}}>
+                <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>No trips yet</Text>
+                <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Your past adventures will appear here!</Text>
+              </View>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
