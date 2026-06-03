@@ -12,7 +12,7 @@ export const tripService = {
     },
 
     getUpcomingTrips: async (): Promise<Trip[]> => {
-        const res = await fetch(`${BASE_URL}/trips/upcoming`);
+        const res = await fetch(`${BASE_URL}/trips/status/upcoming`);
         if (!res.ok) {
             throw new Error("Failed to fetch upcoming trips");
         }
@@ -20,7 +20,7 @@ export const tripService = {
     },
 
     getActiveTrips: async (): Promise<Trip[]> => {
-        const res = await fetch(`${BASE_URL}/trips/active`);
+        const res = await fetch(`${BASE_URL}/trips/status/active`);
         if (!res.ok) {
             throw new Error("Failed to fetch active trips");
         }
@@ -28,7 +28,7 @@ export const tripService = {
     },
 
     getCompletedTrips: async (): Promise<Trip[]> => {
-        const res = await fetch(`${BASE_URL}/trips/completed`);
+        const res = await fetch(`${BASE_URL}/trips/status/completed`);
         if (!res.ok) {
             throw new Error("Failed to fetch completed trips");
         }

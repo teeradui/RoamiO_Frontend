@@ -80,11 +80,11 @@ export default function SuccessScreen() {
                     </Text> 
                 </View>
 
-                <TouchableOpacity onPress={() => router.push("/trips")} style = {{ backgroundColor: Colors.btnPrimary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", marginBottom: 12}}>
-                    <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.bgPrimary}}>View Trips</Text>
+                <TouchableOpacity onPress={() => router.push(`/trips/${params.tripId}` as any)} style = {{ backgroundColor: Colors.btnPrimary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", marginBottom: 12}}>
+                    <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.bgPrimary}}>View Trip</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.replace("/")} style = {{ backgroundColor: Colors.btnSecondary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", borderWidth: 1, borderColor: Colors.textDisabled}}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)')} style = {{ backgroundColor: Colors.btnSecondary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", borderWidth: 1, borderColor: Colors.textDisabled}}>
                     <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.btnPrimary}}>Go Home</Text>
                 </TouchableOpacity>
             </ScrollView>

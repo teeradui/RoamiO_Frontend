@@ -1,4 +1,5 @@
-export type TripStatus = 'active' | 'upcoming' | 'completed';
+import { Image } from 'react-native';
+export type TripStatus = 'Upcoming' | 'Active' | 'Completed';
 
 export interface Trip {
     tripId: number;
@@ -9,7 +10,7 @@ export interface Trip {
     tripDestination: string;
     meetingPoint: string | null;
     imageUrl: string | null;
-    TripStatus: TripStatus;
+    tripStatus: TripStatus;
     createdBy: number;
 }
 
@@ -34,4 +35,9 @@ export interface UpdateTripPayload {
     meetUpTime?: string;
     tripDestination?: string;
     meetingPoint?: string;
+    image?: {
+        uri: string;
+        name: string;
+        type: string;
+    };
 }

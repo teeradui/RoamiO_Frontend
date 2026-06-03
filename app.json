@@ -4,7 +4,7 @@
     "slug": "RoamiO_Frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "roamiofrontend",
+    "scheme": "roamio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -33,7 +33,9 @@
           }
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-barcode-scanner",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

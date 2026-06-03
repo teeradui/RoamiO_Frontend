@@ -118,4 +118,18 @@ export function useTripController() {
             setLoading(false);
         }
     };
+
+    return {
+        trips,
+        loading,
+        error,
+        fetchAllTrips,
+        fetchUpcomingTrips,
+        fetchActiveTrips,
+        fetchCompletedTrips,
+        createTrip,
+        updateTrip,
+        updateTripStatus,
+        deleteTrip,
+    };
 }

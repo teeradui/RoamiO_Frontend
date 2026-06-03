@@ -20,6 +20,8 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { Country as CSCCountry, State } from "country-state-city";
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
+import { useTripController } from "@/src/controllers/tripController";
+import { TripForm } from "@/src/models/TripForm"
 
 // Step1 indicator
 function StepIndicator({ current }: { current: number }) {
@@ -87,8 +89,16 @@ const inputStyle = {
 };
 
 export default function CreateTripScreen() {
-  const [photo, setPhoto] = useState<string | null>(null);
-  const [tripName, setTripName] = useState("");
+  const [formData, setFormData] = useState<TripForm>({
+    tripName: "",
+    startDate: null,
+    endDate: null,
+    destination: "",
+    meetupTime: new Date(),
+    meetingPoint: "",
+    profilePhoto: null,
+  });
+
   const [country, setCountry] = useState<{
     name: string;
     flag: string;
@@ -101,15 +111,9 @@ export default function CreateTripScreen() {
     isoCode: string;
   } | null>(null);
 
-  // Start & End date
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [activePicker, setActivePicker] = useState<"start" | "end" | 'time' | null>(null);  
   const [dateError, setDateError] = useState<string | null>(null);
 
-  // Meet up time & Meeting point
-  const [meetupTime, setMeetupTime] = useState<Date>(new Date());
-  const [meetingPoint, setMeetingPoint] = useState("");
   const [meetingCoords, setMeetingCoords] = useState<{ latitude: number; longitude: number } | null>(null); 
 
   const [mapRegion, setMapRegion] = useState({
@@ -137,29 +141,46 @@ export default function CreateTripScreen() {
       aspect: [4, 3],
       quality: 0.8,
     });
-    if (!result.canceled) setPhoto(result.assets[0].uri);
+    if (!result.canceled) {
+      setFormData((prev: TripForm) => ({ ...prev, profilePhoto: result.assets[0].uri }));
+    }
   };
 
   const canProceed =
-    tripName.trim() !== "" &&
+    formData.tripName.trim() !== "" &&
     country !== null &&
-    startDate !== null &&
-    endDate !== null &&
-    meetupTime !== null;
+    formData.startDate !== null &&
+    formData.endDate !== null &&
+    formData.meetupTime !== null;
 
-  const handleNext = () => {
+  const { createTrip } = useTripController();
+
+  const handleNext = async () => {
     if (!canProceed) return;
+
+    const newTrip = await createTrip({
+        tripName: formData.tripName,
+        tripDestination: `${country?.name}${selectedState ? `, ${selectedState.name}` : ''}`,
+        startTime: formData.startDate!.toISOString(),
+        endTime: formData.endDate!.toISOString(),
+        meetUpTime: formData.meetupTime.toISOString(),
+        meetingPoint: formData.meetingPoint || undefined,
+        image: formData.profilePhoto ? {
+            uri: formData.profilePhoto,
+            name: 'trip-photo.jpg',
+            type: 'image/jpeg'
+        } : undefined,
+    });
+
+    if (!newTrip) return;
+
     router.push({
       pathname: "/trips/invite",
       params: {
-        tripName,
-        country: country?.name,
-        state: selectedState?.name ?? "",
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        meetupTime: meetupTime.toISOString(),
-        meetingPoint,
-        photo: photo ?? "",
+        tripId: newTrip.tripId.toString(),
+        tripName: newTrip.tripName,
+        meetupTime: newTrip.meetUpTime,
+        photo: newTrip.imageUrl ?? '',
       },
     });
   };
@@ -169,15 +190,15 @@ export default function CreateTripScreen() {
     if (!date) return;
     
     if (activePicker === "start") {
-        setStartDate(date);
-        if (endDate && date > endDate) {
+        setFormData((prev: TripForm) => ({...prev, startDate: date}));
+        if (formData.endDate && date > formData.endDate) {
             setDateError("Start date cannot be after end date.");
         } else {
             setDateError(null);
         }
     } else if (activePicker === "end") {
-        setEndDate(date);
-        if (startDate && date < startDate) {
+        setFormData((prev: TripForm) => ({...prev, endDate: date}));
+        if (formData.startDate && date < formData.startDate) {
             setDateError("End date cannot be before start date.");
         } else {
             setDateError(null);
@@ -186,7 +207,7 @@ export default function CreateTripScreen() {
   };
 
   const handleTimeChange = (e: DateTimePickerEvent, date?: Date) => {
-    if (date) setMeetupTime(date);
+    if (date) setFormData((prev: TripForm) => ({ ...prev, meetupTime: date }));
   };
 
   const handleMapPress = async (e: MapPressEvent) => {
@@ -198,7 +219,7 @@ export default function CreateTripScreen() {
     if (result.length > 0) {
       const place = result[0];
       const name = [place.name, place.district, place.city, place.country].filter(Boolean).join(", ");
-      setMeetingPoint(name);
+      setFormData((prev: TripForm) => ({ ...prev, meetingPoint: name }));
     }
   }
 
@@ -224,7 +245,7 @@ export default function CreateTripScreen() {
         const coords = { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) };
         setMeetingCoords(coords);
         setMapRegion({ ...coords, latitudeDelta: 0.05, longitudeDelta: 0.05 });
-        setMeetingPoint(item.display_name.split(',').slice(0, 3).join(','));
+        setFormData((prev: TripForm) => ({ ...prev, meetingPoint: item.display_name.split(',').slice(0, 3).join(',') }));
         setSearchQuery('');
         setSearchResults([]);
     };
@@ -254,9 +275,9 @@ export default function CreateTripScreen() {
           onPress={pickImage}
           style={{ alignItems: "center", marginBottom: 24 }}
         >
-          {photo ? (
+          {formData.profilePhoto ? (
             <Image
-              source={{ uri: photo }}
+              source={{ uri: formData.profilePhoto }}
               style={{ width: 160, height: 130, borderRadius: 16 }}
             />
           ) : (
@@ -299,8 +320,8 @@ export default function CreateTripScreen() {
             style={inputStyle}
             placeholder="e.g. Summer Japan Trip"
             placeholderTextColor={Colors.textDisabled}
-            value={tripName}
-            onChangeText={setTripName}
+            value={formData.tripName}
+            onChangeText={(text) => setFormData((prev: TripForm) => ({ ...prev, tripName: text }))}
           />
         </View>
 
@@ -342,6 +363,9 @@ export default function CreateTripScreen() {
                   flag: item.flag,
                   code: item.code,
                 });
+
+                setSelectedState(null);
+
                 setCountryVisible(false);
 
                 const countryData = CSCCountry.getCountryByCode(item.code);
@@ -408,7 +432,7 @@ export default function CreateTripScreen() {
               }}
             >
               <Text style={{ fontSize: 14, color: Colors.textPrimary }}>
-                { startDate ? formatDate(startDate) : "Select Date" }
+                { formData.startDate ? formatDate(formData.startDate) : "Select Date" }
               </Text>
               <Ionicons
                  name="calendar-outline"
@@ -430,7 +454,7 @@ export default function CreateTripScreen() {
               }}
             >
               <Text style={{ fontSize: 14, color: Colors.textPrimary }}>
-                { endDate ? formatDate(endDate) : "Select Date" }
+                { formData.endDate ? formatDate(formData.endDate) : "Select Date" }
               </Text>
               <Ionicons
                  name="calendar-outline"
@@ -447,30 +471,37 @@ export default function CreateTripScreen() {
           </Text>
         )}
 
-        {activePicker !== null && (
-            <TouchableOpacity onPress = {() => setActivePicker(null)} style={{ alignItems: 'flex-end', paddingHorizontal: 4, paddingVertical:4}}>
-                <Text style={{color: Colors.btnPrimary, fontWeight: '600', fontSize: 14}}> Done</Text>
-            </TouchableOpacity>
-        )}
+        
 
         {activePicker === "start" && (
+            <>
                 <DateTimePicker
-                    value={startDate ?? new Date()}
+                    value={formData.startDate ?? new Date()}
                     mode="date"
                     display={Platform.OS === "ios" ? "spinner" : "default"}
                     textColor={Colors.black}
                     onChange={handleDateChange}
                 /> 
+                <TouchableOpacity onPress = {() => setActivePicker(null)} style={{ alignItems: 'flex-end', paddingHorizontal: 4, paddingVertical:4}}>
+                    <Text style={{color: Colors.btnPrimary, fontWeight: '600', fontSize: 14}}> Done</Text>
+                </TouchableOpacity>
+            </>
           )}
           
           {activePicker === "end" && (
-            <DateTimePicker
-              value={endDate ?? startDate ?? new Date()}
-              mode="date"
-              minimumDate={startDate ?? undefined}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              textColor={Colors.black}
-              onChange={handleDateChange} />
+            <>
+                <DateTimePicker
+                value={formData.endDate ?? formData.startDate ?? new Date()}
+                mode="date"
+                minimumDate={formData.startDate ?? undefined}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                textColor={Colors.black}
+                onChange={handleDateChange} />
+
+                <TouchableOpacity onPress = {() => setActivePicker(null)} style={{ alignItems: 'flex-end', paddingHorizontal: 4, paddingVertical:4}}>
+                    <Text style={{color: Colors.btnPrimary, fontWeight: '600', fontSize: 14}}> Done</Text>
+                </TouchableOpacity>
+            </>  
           )}
 
         {/* Meet Up Time */}
@@ -486,7 +517,7 @@ export default function CreateTripScreen() {
             }}
           >
             <Text style={{ fontSize: 14, color: Colors.textPrimary }}>
-              {formatTime(meetupTime)}
+              {formatTime(formData.meetupTime)}
             </Text>
             <Ionicons
               name="time-outline"
@@ -497,12 +528,18 @@ export default function CreateTripScreen() {
         </View>
 
         {activePicker === "time" && (
-            <DateTimePicker
-              value={meetupTime}
-              mode="time"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              textColor={Colors.black}
-              onChange={handleTimeChange}/>
+            <>
+                <DateTimePicker
+                    value={formData.meetupTime}
+                    mode="time"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    textColor={Colors.black}
+                    onChange={handleTimeChange}/>
+
+                <TouchableOpacity onPress = {() => setActivePicker(null)} style={{ alignItems: 'flex-end', paddingHorizontal: 4, paddingVertical:4}}>
+                    <Text style={{color: Colors.btnPrimary, fontWeight: '600', fontSize: 14}}> Done</Text>
+                </TouchableOpacity>
+            </>
           )}
 
         {/* Meeting Point */}
@@ -511,11 +548,11 @@ export default function CreateTripScreen() {
 
           <TouchableOpacity onPress={() => setMapVisible(true)} style={{ ...inputStyle, marginBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Ionicons name="location-outline" size={16} color={Colors.textMuted}/>
-            <Text style = {{fontSize: 14, color: meetingPoint ? Colors.textPrimary : Colors.textDisabled, flex: 1 }} numberOfLines={1}>
-                {meetingPoint || "Tap on map to select location"}
+            <Text style = {{fontSize: 14, color: formData.meetingPoint ? Colors.textPrimary : Colors.textDisabled, flex: 1 }} numberOfLines={1}>
+                {formData.meetingPoint || "Tap on map to select location"}
             </Text>
-            {meetingPoint ? (
-                <TouchableOpacity onPress={() => {setMeetingPoint(''); setMeetingCoords(null); }}>
+            {formData.meetingPoint ? (
+                <TouchableOpacity onPress={() => {setFormData((prev: TripForm) => ({ ...prev, meetingPoint: '' })); setMeetingCoords(null); }}>
                     <Ionicons name="close-circle" size={16} color={Colors.textMuted}/>
                 </TouchableOpacity>
             ) : (<Ionicons name = "chevron-forward" size ={16} color={Colors.textMuted}/>
@@ -559,22 +596,12 @@ export default function CreateTripScreen() {
                         </View>
                     )}
 
-                    <MapView style = {{ flex: 1}} region={mapRegion} onRegionChangeComplete={setMapRegion} onPress={async (e) => {
-                        const {latitude, longitude} = e.nativeEvent.coordinate;
-                        setMeetingCoords({latitude, longitude});
-                        setMapRegion((prev) => ({...prev, latitude,longitude}));
-                        const result = await Location.reverseGeocodeAsync({latitude, longitude});
-                        if (result.length > 0){
-                            const place = result[0];
-                            const name = [place.name, place.district, place.city, place.country].filter(Boolean).join(', ');
-                            setMeetingPoint(name);
-                        }
-                    }}>
+                    <MapView style = {{ flex: 1}} region={mapRegion} onRegionChangeComplete={setMapRegion} onPress={handleMapPress}>
                         {meetingCoords && (<Marker coordinate={meetingCoords} />)}
                     </MapView>
 
                     <TouchableOpacity onPress={() => setMapVisible(false)} style= {{ margin: 16, backgroundColor: Colors.btnPrimary, borderRadius: 30, paddingVertical: 14, alignItems: 'center'}}>
-                        <Text style={{ color: Colors.bgCard, fontSize: 16, fontWeight:'700'}}>Comfirm</Text>
+                        <Text style={{ color: Colors.bgCard, fontSize: 16, fontWeight:'700'}}>Confirm</Text>
                     </TouchableOpacity>
 
                 </View>
