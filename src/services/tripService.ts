@@ -90,19 +90,17 @@ export const tripService = {
     return res.json();
   },
 
-  updateTripStatus: async (
-    tripId: number,
-    tripStatus: string,
-  ): Promise<Trip> => {
-    const res = await fetch(`${BASE_URL}/trips/${tripId}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tripStatus }),
-    });
-    if (!res.ok) {
-      throw new Error("Failed to update trip status");
-    }
-    return res.json();
+  updateTripStatus: async (tripId: number, tripStatus: string): Promise<Trip> => {
+      const res = await fetch(`${BASE_URL}/trips/${tripId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: tripStatus }),
+      });
+      if (!res.ok) {
+          throw new Error("Failed to update trip status");
+      }
+      const data = await res.json();
+      return data.trip;
   },
 
   deleteTrip: async (tripId: number): Promise<void> => {

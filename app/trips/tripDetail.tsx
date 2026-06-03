@@ -30,7 +30,7 @@ export default function TripDetailScreen() {
   const { tripId } = useLocalSearchParams();
   const id = Number(tripId);
 
-  const { trips, fetchAllTrips, deleteTrip, loading } = useTripController();
+  const { trips, fetchAllTrips, deleteTrip, updateTripStatus, loading } = useTripController();
   const { members, fetchMembers } = useTripMemberController(id);
   const [activeTab, setActiveTab] = useState<Tab>('Overview');
 
@@ -40,6 +40,24 @@ export default function TripDetailScreen() {
     fetchAllTrips();
     fetchMembers();
   }, [id]);
+
+  const handleEndTrip = () => {
+    Alert.alert(
+        'End Trip',
+        `Are you sure you want to end "${trip?.tripName}"?`,
+        [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'End Trip',
+                style: 'destructive',
+                onPress: async () => {
+                    await updateTripStatus(id, 'Completed');
+                    await fetchAllTrips();
+                },
+            },
+        ]
+    );
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -87,10 +105,21 @@ export default function TripDetailScreen() {
           <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, fontWeight: '700', color: Colors.textPrimary }}>
             {trip.tripName}
           </Text>
+          {trip.tripStatus === 'Active' && (
+          <TouchableOpacity
+              onPress={handleEndTrip}
+              style={{ height: 34, borderRadius: 17, backgroundColor: '#FFE5E5', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, flexDirection: 'row', gap: 4 }}
+          >
+              <Ionicons name="stop-circle-outline" size={16} color={Colors.iconOrange} />
+              <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.iconOrange }}>End Trip</Text>
+          </TouchableOpacity>
+          )}
           <View style={{ flexDirection: 'row', gap: 8 }}>
+            {trip.tripStatus !== 'Active' && (
             <TouchableOpacity onPress={handleDelete} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#FFE5E5', alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="trash-outline" size={18} color={Colors.iconOrange} />
             </TouchableOpacity>
+            )}
             <TouchableOpacity style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="share-outline" size={18} color={Colors.iconBrown} />
             </TouchableOpacity>
