@@ -156,7 +156,11 @@ export default function CreateTripScreen() {
   const { createTrip } = useTripController();
 
   const handleNext = async () => {
+    
+
     if (!canProceed) return;
+
+    console.log('calling createTrip...');
 
     const newTrip = await createTrip({
         tripName: formData.tripName,
@@ -172,7 +176,12 @@ export default function CreateTripScreen() {
         } : undefined,
     });
 
+    
+    console.log('newTrip result:', newTrip);
+
     if (!newTrip) return;
+
+    console.log('navigating...');
 
     router.push({
       pathname: "/trips/invite",
@@ -249,6 +258,13 @@ export default function CreateTripScreen() {
         setSearchQuery('');
         setSearchResults([]);
     };
+
+    console.log('canProceed:', canProceed, {
+    tripName: formData.tripName.trim() !== "",
+    country: country !== null,
+    startDate: formData.startDate !== null,
+    endDate: formData.endDate !== null,
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bgPrimary }}>
