@@ -1,27 +1,26 @@
+import { Colors } from "@/constants/theme";
+import { useTripController } from "@/src/controllers/tripController";
+import { TripForm } from "@/src/models/TripForm";
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker, { DateTimePickerEvent, } from "@react-native-community/datetimepicker";
+import { Country as CSCCountry, State } from "country-state-city";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  FlatList,
+  Image,
+  Modal,
+  Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  Platform,
-  Image,
-  Modal,
-  FlatList,
+  View
 } from "react-native";
-import { router } from "expo-router";
-import { Colors } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { CountryPicker } from "react-native-country-codes-picker";
-import DateTimePicker, { DateTimePickerEvent,} from "@react-native-community/datetimepicker";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import { Country as CSCCountry, State } from "country-state-city";
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
-import { useTripController } from "@/src/controllers/tripController";
-import { TripForm } from "@/src/models/TripForm"
 
 // Step1 indicator
 function StepIndicator({ current }: { current: number }) {
@@ -175,6 +174,7 @@ export default function CreateTripScreen() {
             type: 'image/jpeg'
         } : undefined,
     });
+    console.log('newTrip:', JSON.stringify(newTrip, null, 2));
 
     
     console.log('newTrip result:', newTrip);

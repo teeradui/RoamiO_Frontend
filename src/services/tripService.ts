@@ -1,6 +1,6 @@
 import { CreateTripPayload, Trip, UpdateTripPayload } from "@/src/models/Trip";
 
-const BASE_URL = "http://10.121.96.97:3000/api";
+const BASE_URL = "http://10.120.67.97:3000/api";
 
 export const tripService = {
   getAllTrips: async (): Promise<Trip[]> => {
@@ -64,11 +64,14 @@ export const tripService = {
     const responseText = await res.text();
     console.log('createTrip response:', responseText);
 
+    const data = JSON.parse(responseText);
+
     if (!res.ok) {
-      throw new Error("Failed to create trip");
+      throw new Error(data.error || "Failed to create trip");
     }
 
-    return JSON.parse(responseText);
+    return data.trip;
+    //return JSON.parse(responseText);
     //return res.json();
   },
 

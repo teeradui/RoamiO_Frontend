@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
 import { Trip } from '@/src/models/Trip';
 import { TripMember } from '@/src/models/TripMember';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
     trip: Trip;
@@ -107,7 +107,7 @@ export default function TripCard({trip, members, onPress}: Props ){
                 {/*กลับมาใส่ฟังก์ชันตรงเลขด้วย */}
                 <View style={{flexDirection: 'row', alignItems: 'center', gap: 16}}>
                     <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-          ด              <Ionicons name="camera-outline" size={13} color={Colors.iconBrown}/>
+                        <Ionicons name="camera-outline" size={13} color={Colors.iconBrown}/>
                         <Text style={{fontSize: 12, color: Colors.textSecondary}}>0</Text>
                     </View>
                     <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
