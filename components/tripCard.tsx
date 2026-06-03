@@ -13,12 +13,13 @@ type Props = {
 
 function getDisplayStatus(trip: Trip): 'Upcoming' | 'Active' | 'Completed' {
     if (trip.tripStatus === 'Completed') return 'Completed';
-
+    
     const now = new Date();
-    const meetUp = new Date(trip.meetUpTime);
-
-    if (now >= meetUp) return 'Active';
-
+    const start = new Date(trip.startTime);
+    const end = new Date(trip.endTime);
+    
+    if (now > end) return 'Completed';
+    if (now >= start) return 'Active';
     return 'Upcoming';
 }
 

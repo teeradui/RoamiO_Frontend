@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
-import { useTripController } from '@/src/controllers/tripController';
 import TripCard from '@/components/tripCard';
+import { Colors } from "@/constants/theme";
+import { useTripController } from '@/src/controllers/tripController';
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type FilterTab = 'All' | 'Active' | 'Upcoming' | 'Completed';
 
@@ -99,7 +99,7 @@ export default function HomeScreen() {
                   <TripCard key={trip.tripId}
                     trip={trip}
                     members={[]}
-                    onPress={() => router.push(`/trips/${trip.tripId}` as any)}/>
+                    onPress={() => router.push({ pathname: "/trips/tripDetail", params: { tripId: trip.tripId } })}/>
                 ))
               )}
           </View>
@@ -137,7 +137,7 @@ export default function HomeScreen() {
                 <TripCard key={trip.tripId}
                 trip={trip}
                 members={[]}
-                onPress={() => router.push(`/trips/${trip.tripId}` as any)}/>
+                onPress={() => router.push({ pathname: "/trips/tripDetail", params: { tripId: trip.tripId } })}/>
               ))
             )}
             

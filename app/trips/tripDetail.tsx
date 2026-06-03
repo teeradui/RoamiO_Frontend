@@ -5,28 +5,29 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-import ActivitiesTab from '@/components/trip/ActivitiesTab';
-import ExpensesTab from '@/components/trip/ExpensesTab';
-import MapTab from '@/components/trip/MapTab';
-import MembersTab from '@/components/trip/MembersTab';
-import OverviewTab from '@/components/trip/OverviewTab';
-import PhotosTab from '@/components/trip/PhotosTab';
+import ActivitiesTab from '@/components/trip/activitiesTab';
+//import ExpensesTab from '@/components/trip/expensesTab';
+import MapTab from '@/components/trip/mapTab';
+import MembersTab from '@/components/trip/membersTab';
+import OverviewTab from '@/components/trip/overviewTab';
+import PhotosTab from '@/components/trip/photosTab';
 
 type Tab = 'Overview' | 'Map' | 'Activities' | 'Photos' | 'Expenses' | 'Members';
 const TABS: Tab[] = ['Overview', 'Map', 'Activities', 'Photos', 'Expenses', 'Members'];
 
 export default function TripDetailScreen() {
-  const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  //const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  const { tripId } = useLocalSearchParams();
   const id = Number(tripId);
 
   const { trips, fetchAllTrips, deleteTrip, loading } = useTripController();
@@ -91,7 +92,7 @@ export default function TripDetailScreen() {
               <Ionicons name="trash-outline" size={18} color={Colors.iconOrange} />
             </TouchableOpacity>
             <TouchableOpacity style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="sshare-outline" size={18} color={Colors.iconBrown} />
+              <Ionicons name="share-outline" size={18} color={Colors.iconBrown} />
             </TouchableOpacity>
           </View>
         </View>
@@ -111,7 +112,7 @@ export default function TripDetailScreen() {
               <Text style={{ fontSize: 20, fontWeight: '700', color: Colors.textPrimary }}>
                 {trip.tripDestination}
               </Text>
-              <TouchableOpacity onPress = {() => router.push({ pathname: 'trips/edit', params: { tripId: id.toString() } })}>
+              <TouchableOpacity onPress = {() => router.push({ pathname: "/trips/edit", params: { tripId: id.toString() } })}>
               <Ionicons name="pencil-outline" size={16} color={Colors.iconBrown} />
               </TouchableOpacity>
             </View>
@@ -191,7 +192,7 @@ export default function TripDetailScreen() {
             {activeTab === 'Map'         && <MapTab trip={trip} members={members} />}
             {activeTab === 'Activities'  && <ActivitiesTab />}
             {activeTab === 'Photos'      && <PhotosTab />}
-            {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />}
+            {/* {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />} */}
             {activeTab === 'Members'     && <MembersTab trip={trip} members={members} onRefresh={fetchMembers} />}
           </View>
         </ScrollView>
