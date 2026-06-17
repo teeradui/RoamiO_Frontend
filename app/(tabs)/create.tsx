@@ -174,7 +174,6 @@ export default function CreateTripScreen() {
             type: 'image/jpeg'
         } : undefined,
     });
-    console.log('newTrip:', JSON.stringify(newTrip, null, 2));
 
     
     console.log('newTrip result:', newTrip);

@@ -1,5 +1,5 @@
-import TripCard from '@/components/tripCard';
 import { Colors } from "@/constants/theme";
+import TripCard from '@/src/components/tripCard';
 import { useTripController } from '@/src/controllers/tripController';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";

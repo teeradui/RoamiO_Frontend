@@ -15,12 +15,12 @@ import {
   View,
 } from 'react-native';
 
-import ActivitiesTab from '@/components/trip/activitiesTab';
+import ActivitiesTab from '@/src/components/trip/activitiesTab';
 //import ExpensesTab from '@/components/trip/expensesTab';
-import MapTab from '@/components/trip/mapTab';
-import MembersTab from '@/components/trip/membersTab';
-import OverviewTab from '@/components/trip/overviewTab';
-import PhotosTab from '@/components/trip/photosTab';
+import MapTab from '@/src/components/trip/mapTab';
+import MembersTab from '@/src/components/trip/membersTab';
+import OverviewTab from '@/src/components/trip/overviewTab';
+import PhotosTab from '@/src/components/trip/photosTab';
 
 type Tab = 'Overview' | 'Map' | 'Activities' | 'Photos' | 'Expenses' | 'Members';
 const TABS: Tab[] = ['Overview', 'Map', 'Activities', 'Photos', 'Expenses', 'Members'];
