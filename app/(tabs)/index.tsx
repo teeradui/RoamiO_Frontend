@@ -1,8 +1,11 @@
-import React, {useState} from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/theme";
+import TripCard from '@/src/components/tripCard';
+import { useTripController } from '@/src/controllers/tripController';
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type FilterTab = 'All' | 'Active' | 'Upcoming' | 'Completed';
 
@@ -10,6 +13,24 @@ const FILTER_TABS: FilterTab[] = ['All', 'Active', 'Upcoming', 'Completed'];
 
 export default function HomeScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
+  const { trips, fetchAllTrips, loading} = useTripController();
+
+  useEffect(() => {
+    fetchAllTrips();
+  }, []);
+
+  const activeUpcoming = trips.filter((t) => {
+    if (activeFilter === 'All') return t.tripStatus === 'Active' || t.tripStatus === 'Upcoming';
+    if (activeFilter === 'Active') return t.tripStatus === 'Active';
+    if (activeFilter === 'Upcoming') return t.tripStatus === 'Upcoming';
+    return false;
+  });
+
+  const history = trips.filter((t) => {
+    if (activeFilter === 'All') return t.tripStatus === 'Completed';
+    if (activeFilter === 'Completed') return t.tripStatus === 'Completed';
+    return false;
+  });
 
   return (
     <View style = {{ flex: 1, backgroundColor: Colors.bgPrimary }}>
@@ -46,7 +67,12 @@ export default function HomeScreen() {
         })}
       </ScrollView>
 
-      <ScrollView showsVerticalScrollIndicator = {false} style = {{ flex:1}} contentContainerStyle = {{paddingHorizontal: 20, paddingBottom: 24}}>
+      {loading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <ActivityIndicator size="large" color={Colors.tabActive}/>
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator = {false} style = {{ flex:1}} contentContainerStyle = {{paddingHorizontal: 20, paddingBottom: 24}}>
 
         {/* active & upcoming section */}
         {activeFilter !== 'Completed' && (
@@ -58,17 +84,24 @@ export default function HomeScreen() {
               <Text style = {{ fontSize: 17, fontWeight: "700", color: Colors.textPrimary }}>Active & Upcoming Trips</Text>
             </View>
             
-            {/*empty state*/}
-            <TouchableOpacity style = {{ alignItems: "center", justifyContent: "center", paddingVertical: 32, gap:10}}>
-              <View style = {{width: 52, height: 52,  alignItems: "center", justifyContent: "center"}}>
-                <Ionicons name="add-circle-outline" size = {28} color= {Colors.textDisabled}/>
-              </View>
-              <View style = {{ alignItems: 'center', gap: 2}}>
-                <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>Start a New Trip</Text>
-                <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Let's create your adventure!</Text>
-              </View>
-              
-            </TouchableOpacity>
+            {activeUpcoming.length === 0 ? (
+              <TouchableOpacity style = {{ alignItems: "center", justifyContent: "center", paddingVertical: 32, gap:10}}>
+                <View style = {{width: 52, height: 52,  alignItems: "center", justifyContent: "center"}}>
+                  <Ionicons name="add-circle-outline" size = {28} color= {Colors.textDisabled}/>
+                </View>
+                <View style = {{ alignItems: 'center', gap: 2}}>
+                  <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>Start a New Trip</Text>
+                  <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Let's create your adventure!</Text>
+                </View>
+              </TouchableOpacity>
+              ) :(
+                activeUpcoming.map((trip) => (
+                  <TripCard key={trip.tripId}
+                    trip={trip}
+                    members={[]}
+                    onPress={() => router.push({ pathname: "/trips/tripDetail", params: { tripId: trip.tripId } })}/>
+                ))
+              )}
           </View>
         )}
 
@@ -81,27 +114,37 @@ export default function HomeScreen() {
               </LinearGradient>
               <Text style = {{fontSize: 17, fontWeight: "700", color: Colors.textPrimary}}>Trip History</Text>
             </View>
-
-            {/*empty state*/}
-            <View style = {{alignItems:"center", justifyContent: "center", paddingVertical: 32, gap: 10}}>
-              <View
-                style={{
-                  width: 52,
-                  height: 52,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Ionicons name="sad-outline" size={26} color={Colors.textDisabled} />
+            
+            {history.length === 0 ? (
+              <View style = {{alignItems:"center", justifyContent: "center", paddingVertical: 32, gap: 10}}>
+                <View
+                  style={{
+                    width: 52,
+                    height: 52,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Ionicons name="sad-outline" size={26} color={Colors.textDisabled} />
+                </View>
+                <View style = {{ alignItems: 'center', gap: 2}}>
+                  <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>No trips yet</Text>
+                  <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Your past adventures will appear here!</Text>
+                </View>
               </View>
-              <View style = {{ alignItems: 'center', gap: 2}}>
-                <Text style = {{ fontSize: 15, color: Colors.textDisabled, fontWeight: "600"}}>No trips yet</Text>
-                <Text style = {{fontSize: 12, color: Colors.textDisabled}}>Your past adventures will appear here!</Text>
-              </View>
-            </View>
+            ) : (
+              history.map((trip) => (
+                <TripCard key={trip.tripId}
+                trip={trip}
+                members={[]}
+                onPress={() => router.push({ pathname: "/trips/tripDetail", params: { tripId: trip.tripId } })}/>
+              ))
+            )}
+            
           </View>
         )}
       </ScrollView>
+      )}  
     </View>
   );
 }

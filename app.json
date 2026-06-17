@@ -4,18 +4,23 @@
     "slug": "RoamiO_Frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "roamiofrontend",
+    "scheme": "roamio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.RoamiO-Frontend"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.anonymous.RoamiO_Frontend"
     },
     "web": {
       "output": "static"
@@ -33,7 +38,9 @@
           }
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-barcode-scanner",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

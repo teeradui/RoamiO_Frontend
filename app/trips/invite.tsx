@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, FlatList } from
 import { router, useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useTripInviteController } from "@/src/controllers/tripInviteController";
+import * as Clipboard from 'expo-clipboard';
 
 function StepIndicator({ current }: { current: number }) {
   return (
@@ -34,6 +36,11 @@ export default function InviteScreen() {
     const params = useLocalSearchParams();
     const [SelectedFriends, setSelectedFriends] = useState<string[]>([]);
 
+    const handleCopyLink = async () => {
+        const link = `roamio://trips/${params.tripId}?tripName=${encodeURIComponent(params.tripName as string)}&invitedBy=${encodeURIComponent('username')}`;
+        await Clipboard.setStringAsync(link);
+    };
+
     const toggleFriend = (id: string) => {
         setSelectedFriends((prev) =>
             prev.includes(id) ? prev.filter((friendId) => friendId !== id) : [...prev, id]
@@ -42,10 +49,17 @@ export default function InviteScreen() {
 
     const memberCount = 1 + SelectedFriends.length;
 
-    const handleCreate = () => {
+    const tripId = Number(params.tripId);
+    const { sendInvite } = useTripInviteController(tripId);
+
+    const handleCreate = async () => {
         router.push({
             pathname: "/trips/success",
-            params: {...params, memberCount: memberCount.toString()},
+            params: {
+                tripId: params.tripId,
+                tripName: params.tripName,
+                meetupTime: params.meetupTime
+            },
         });
     };
 
@@ -70,9 +84,9 @@ export default function InviteScreen() {
                     </View>
                     <View style = {{ flex: 1}}>
                         <Text style = {{fontSize: 15, fontWeight: "600", color: Colors.textPrimary}}>Share Invite Link</Text>
-                        <Text style={{ fontSize: 12, color: Colors.textMuted, marginTop: 2 }}>RoamiO/{params.tripName}/username</Text>{/* เปลี่ยนให้เป็น url */}
+                        <Text style={{ fontSize: 12, color: Colors.textMuted, marginTop: 2 }}>roamio://trips/{params.tripId}?tripName={params.tripName}&invitedBy=username</Text>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleCopyLink}>
                         <Ionicons name="copy-outline" size={20} color={Colors.textMuted} />
                     </TouchableOpacity>
                 </View>

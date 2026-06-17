@@ -1,15 +1,15 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-} from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import LottieView from "lottie-react-native";
 import { Colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
+import React from "react";
+import {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 function StepIndicator({ current }: { current: number }) {
   return (
@@ -80,11 +80,11 @@ export default function SuccessScreen() {
                     </Text> 
                 </View>
 
-                <TouchableOpacity onPress={() => router.push("/trips")} style = {{ backgroundColor: Colors.btnPrimary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", marginBottom: 12}}>
-                    <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.bgPrimary}}>View Trips</Text>
+                <TouchableOpacity onPress={() => router.push({ pathname: "/trips/tripDetail", params: { tripId: params.tripId } })} style = {{ backgroundColor: Colors.btnPrimary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", marginBottom: 12}}>
+                    <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.bgPrimary}}>View Trip</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.replace("/")} style = {{ backgroundColor: Colors.btnSecondary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", borderWidth: 1, borderColor: Colors.textDisabled}}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)')} style = {{ backgroundColor: Colors.btnSecondary, borderRadius: 30, paddingVertical: 16, width: "100%", alignItems: "center", borderWidth: 1, borderColor: Colors.textDisabled}}>
                     <Text style = {{fontSize: 16, fontWeight: "700", color: Colors.btnPrimary}}>Go Home</Text>
                 </TouchableOpacity>
             </ScrollView>

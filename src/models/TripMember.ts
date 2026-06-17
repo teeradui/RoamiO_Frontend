@@ -5,6 +5,9 @@ export interface TripMember {
     tripId: number;
     userId: number;
     memberStatus: MemberStatus;
+    profileImage?: string | null;
+    username?: string;
+    score?: number;
 }
 
 export interface UpdateMemberPayload {

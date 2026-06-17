@@ -1,35 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
 import { useTripController } from '@/src/controllers/tripController';
 import { useTripMemberController } from '@/src/controllers/tripMemberController';
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import OverviewTab from '@/components/trip/OverviewTab';
-import MapTab from '@/components/trip/MapTab';
-import ActivitiesTab from '@/components/trip/ActivitiesTab';
-import PhotosTab from '@/components/trip/PhotosTab';
-import ExpensesTab from '@/components/trip/ExpensesTab';
-import MembersTab from '@/components/trip/MembersTab';
+import ActivitiesTab from '@/src/components/trip/activitiesTab';
+//import ExpensesTab from '@/components/trip/expensesTab';
+import MapTab from '@/src/components/trip/mapTab';
+import MembersTab from '@/src/components/trip/membersTab';
+import OverviewTab from '@/src/components/trip/overviewTab';
+import PhotosTab from '@/src/components/trip/photosTab';
 
 type Tab = 'Overview' | 'Map' | 'Activities' | 'Photos' | 'Expenses' | 'Members';
 const TABS: Tab[] = ['Overview', 'Map', 'Activities', 'Photos', 'Expenses', 'Members'];
 
 export default function TripDetailScreen() {
-  const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  //const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  const { tripId } = useLocalSearchParams();
   const id = Number(tripId);
 
-  const { trips, fetchAllTrips, deleteTrip, loading } = useTripController();
+  const { trips, fetchAllTrips, deleteTrip, updateTripStatus, loading } = useTripController();
   const { members, fetchMembers } = useTripMemberController(id);
   const [activeTab, setActiveTab] = useState<Tab>('Overview');
 
@@ -39,6 +40,24 @@ export default function TripDetailScreen() {
     fetchAllTrips();
     fetchMembers();
   }, [id]);
+
+  const handleEndTrip = () => {
+    Alert.alert(
+        'End Trip',
+        `Are you sure you want to end "${trip?.tripName}"?`,
+        [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'End Trip',
+                style: 'destructive',
+                onPress: async () => {
+                    await updateTripStatus(id, 'Completed');
+                    await fetchAllTrips();
+                },
+            },
+        ]
+    );
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -86,12 +105,23 @@ export default function TripDetailScreen() {
           <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, fontWeight: '700', color: Colors.textPrimary }}>
             {trip.tripName}
           </Text>
+          {trip.tripStatus === 'Active' && (
+          <TouchableOpacity
+              onPress={handleEndTrip}
+              style={{ height: 34, borderRadius: 17, backgroundColor: '#FFE5E5', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, flexDirection: 'row', gap: 4 }}
+          >
+              <Ionicons name="stop-circle-outline" size={16} color={Colors.iconOrange} />
+              <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.iconOrange }}>End Trip</Text>
+          </TouchableOpacity>
+          )}
           <View style={{ flexDirection: 'row', gap: 8 }}>
+            {trip.tripStatus !== 'Active' && (
             <TouchableOpacity onPress={handleDelete} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#FFE5E5', alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="trash-outline" size={18} color={Colors.iconOrange} />
             </TouchableOpacity>
+            )}
             <TouchableOpacity style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="sshare-outline" size={18} color={Colors.iconBrown} />
+              <Ionicons name="share-outline" size={18} color={Colors.iconBrown} />
             </TouchableOpacity>
           </View>
         </View>
@@ -111,7 +141,7 @@ export default function TripDetailScreen() {
               <Text style={{ fontSize: 20, fontWeight: '700', color: Colors.textPrimary }}>
                 {trip.tripDestination}
               </Text>
-              <TouchableOpacity onPress = {() => router.push({ pathname: 'trips/edit', params: { tripId: id.toString() } })}>
+              <TouchableOpacity onPress = {() => router.push({ pathname: "/trips/edit", params: { tripId: id.toString() } })}>
               <Ionicons name="pencil-outline" size={16} color={Colors.iconBrown} />
               </TouchableOpacity>
             </View>
@@ -191,7 +221,7 @@ export default function TripDetailScreen() {
             {activeTab === 'Map'         && <MapTab trip={trip} members={members} />}
             {activeTab === 'Activities'  && <ActivitiesTab />}
             {activeTab === 'Photos'      && <PhotosTab />}
-            {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />}
+            {/* {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />} */}
             {activeTab === 'Members'     && <MembersTab trip={trip} members={members} onRefresh={fetchMembers} />}
           </View>
         </ScrollView>

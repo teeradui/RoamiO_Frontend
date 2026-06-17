@@ -13,6 +13,8 @@ export const Colors = {
   textSecondary: '#ab653a',
   textMuted: '#bea690',
   textDisabled: '#dcc6b4',
+  textAddBtn: '#36A1C7',
+  textRemoveBtn: '#F24822',
 
   // Tab Bar Colors
   tabActive: '#eca205',
@@ -28,6 +30,17 @@ export const Colors = {
   // Button Colors
   btnPrimary: '#FF7D5C',
   btnSecondary: '#FFFAF1',
+  btnAdd: '#BBE7FF',
+  btnRemove: '#FFD4CD',
+
+  // Status Color
+  bgUpcoming: '#3B54E045',
+  textUpcoming: '#3B54E0',
+  bgActive: '#F9731645',
+  textActive: '#F97316',
+  bgCompleted: '#64FF7645',
+  textCompleted: '#33BA42',
+
 
   //Step bar colors
   stepActive: '#FF613A',
