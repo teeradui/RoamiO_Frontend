@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import ActivitiesTab from '@/src/components/trip/activitiesTab';
-//import ExpensesTab from '@/components/trip/expensesTab';
+import ExpensesTab from '@/src/components/trip/expensesTab';
 import MapTab from '@/src/components/trip/mapTab';
 import MembersTab from '@/src/components/trip/membersTab';
 import OverviewTab from '@/src/components/trip/overviewTab';
@@ -221,7 +221,7 @@ export default function TripDetailScreen() {
             {activeTab === 'Map'         && <MapTab trip={trip} members={members} />}
             {activeTab === 'Activities'  && <ActivitiesTab />}
             {activeTab === 'Photos'      && <PhotosTab />}
-            {/* {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />} */}
+            {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />} 
             {activeTab === 'Members'     && <MembersTab trip={trip} members={members} onRefresh={fetchMembers} />}
           </View>
         </ScrollView>

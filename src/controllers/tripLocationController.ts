@@ -1,8 +1,8 @@
 import {
-    Attendance,
-    LatestLocation,
-    SaveLocationPayload,
-    TripStart,
+  Attendance,
+  LatestLocation,
+  SaveLocationPayload,
+  TripStart,
 } from "@/src/models/TripLocation";
 import { tripLocationService } from "@/src/services/tripLocationService";
 import { useState } from "react";
@@ -68,6 +68,8 @@ export function useTripLocationController(tripId: number) {
       setLoading(false);
     }
   };
+
+  
 
   return {
     tripStart,

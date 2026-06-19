@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/theme";
 import TripCard from '@/src/components/tripCard';
 import { useTripController } from '@/src/controllers/tripController';
+import { useNotificationController } from '@/src/controllers/tripNotificationController';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
@@ -11,12 +12,17 @@ type FilterTab = 'All' | 'Active' | 'Upcoming' | 'Completed';
 
 const FILTER_TABS: FilterTab[] = ['All', 'Active', 'Upcoming', 'Completed'];
 
+//replace when auth is done
+const CURRENT_USER_ID = 1;
+
 export default function HomeScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
   const { trips, fetchAllTrips, loading} = useTripController();
+  const { unreadCount, fetchUnreadCount } = useNotificationController(CURRENT_USER_ID);
 
   useEffect(() => {
     fetchAllTrips();
+    fetchUnreadCount();
   }, []);
 
   const activeUpcoming = trips.filter((t) => {
@@ -50,8 +56,31 @@ export default function HomeScreen() {
           <Text style = {{ fontSize: 26, fontWeight: "800", color: Colors.textPrimary, marginTop: 1 }}>My Trip</Text>
         </View>
 
-        <TouchableOpacity style = {{width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center'}}>
-          <Ionicons name="notifications-outline" size = {22} color = {Colors.textSecondary} />
+        <TouchableOpacity
+          onPress={() => router.push('/notifications')}
+          style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.bgAccent, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Ionicons name="notifications-outline" size={22} color={Colors.textSecondary} />
+          {unreadCount > 0 && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 4,
+                right: 4,
+                minWidth: 16,
+                height: 16,
+                borderRadius: 8,
+                backgroundColor: Colors.iconOrange,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 3,
+              }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
