@@ -219,7 +219,7 @@ export default function TripDetailScreen() {
           <View style={{ paddingHorizontal: 16, paddingBottom: 32 }}>
             {activeTab === 'Overview'    && <OverviewTab trip={trip} members={members} />}
             {activeTab === 'Map'         && <MapTab trip={trip} members={members} />}
-            {activeTab === 'Activities'  && <ActivitiesTab />}
+            {activeTab === 'Activities'  && <ActivitiesTab trip={trip}/>}
             {activeTab === 'Photos'      && <PhotosTab />}
             {activeTab === 'Expenses'    && <ExpensesTab trip={trip} members={members} />} 
             {activeTab === 'Members'     && <MembersTab trip={trip} members={members} onRefresh={fetchMembers} />}
